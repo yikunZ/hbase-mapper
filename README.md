@@ -100,5 +100,3 @@ List<People> peopleList = mapper.scan("010101", "010111", People.class);
 - java8大基础数据类型以及对应的Class：int(Integer)、short(Short)、long(Long)、byte(Byte)、double(Double)、float(Float)、boolean(Boolean)、char(Character)
 - 常用时间类型：Date、Calendar、LocalDate、LocalDateTime
 - 其他常用类型：String、BigDecimal
-
-# hbase-mapper
