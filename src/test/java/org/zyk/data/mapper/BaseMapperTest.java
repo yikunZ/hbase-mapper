@@ -6,9 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.zyk.data.modol.*;
-import org.zyk.data.util.accessor.HbaseClient;
-import org.zyk.data.util.mapper.DefaultMapper;
-import org.zyk.data.util.mapper.Mapper;
+import org.zyk.data.accessor.HbaseClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
