@@ -4,7 +4,6 @@ import org.zyk.data.annotation.Column;
 import org.zyk.data.annotation.Family;
 import org.zyk.data.annotation.Rowkey;
 import org.zyk.data.annotation.Table;
-import org.zyk.data.util.annotation.*;
 
 @Table(name = "people")
 @Family("cf")
