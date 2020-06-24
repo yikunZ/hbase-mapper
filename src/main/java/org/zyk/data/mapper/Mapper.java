@@ -6,7 +6,6 @@ import org.zyk.data.accessor.HbaseTableDataAccessor;
 import org.zyk.data.accessor.HbaseTableDataAccessorImpl;
 import org.zyk.data.model.InnerTableName;
 import org.zyk.data.model.TableDefineInfo;
-import org.zyk.data.util.accessor.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,13 +13,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public interface Mapper {
-    Object tableLocked = new Object();
 
-    Object dataAccessorLocked = new Object();
+    Map<InnerTableName, HbaseTableDataAccessor> ALL_HBASE_DATA_ACCESSORS = new ConcurrentHashMap<>();
 
-    Map<InnerTableName, HbaseTableDataAccessor> allHbaseDataAccessor = new ConcurrentHashMap<>();
-
-    Map<Class, TableDefineInfo> allTables = new ConcurrentHashMap<>();
+    Map<Class, TableDefineInfo> ALL_TABLES = new ConcurrentHashMap<>();
 
     /**
      * 添加数据
@@ -114,17 +110,17 @@ public interface Mapper {
 
     static TableDefineInfo getTableDefineInfo(Class clazz) {
         // 从缓存中获取（双重锁定校验）
-        if (allTables.containsKey(clazz)) {
-            return allTables.get(clazz);
+        if (ALL_TABLES.containsKey(clazz)) {
+            return ALL_TABLES.get(clazz);
         }
 
-        synchronized (tableLocked) {
-            if (allTables.containsKey(clazz)) {
-                return allTables.get(clazz);
+        synchronized (ALL_TABLES) {
+            if (ALL_TABLES.containsKey(clazz)) {
+                return ALL_TABLES.get(clazz);
             }
 
             TableDefineInfo tableDefineInfo = new TableDefineInfo(clazz);
-            allTables.put(clazz, tableDefineInfo);
+            ALL_TABLES.put(clazz, tableDefineInfo);
             return tableDefineInfo;
         }
     }
@@ -133,19 +129,18 @@ public interface Mapper {
         // 先从缓存中获取dataAccessor，否则创建一个
         TableName table = TableName.valueOf(tableName);
         InnerTableName innerTableName = InnerTableName.create(table);
-        if (allHbaseDataAccessor.containsKey(innerTableName)) {
-            return allHbaseDataAccessor.get(innerTableName);
+        if (ALL_HBASE_DATA_ACCESSORS.containsKey(innerTableName)) {
+            return ALL_HBASE_DATA_ACCESSORS.get(innerTableName);
         }
 
-        synchronized (dataAccessorLocked) {
-            if (allHbaseDataAccessor.containsKey(innerTableName)) {
-                return allHbaseDataAccessor.get(innerTableName);
+        synchronized (ALL_HBASE_DATA_ACCESSORS) {
+            if (ALL_HBASE_DATA_ACCESSORS.containsKey(innerTableName)) {
+                return ALL_HBASE_DATA_ACCESSORS.get(innerTableName);
             }
 
             HbaseTableDataAccessor hbaseTableDataAccessor = HbaseTableDataAccessorImpl.create(table, hbaseClient);
-            allHbaseDataAccessor.put(innerTableName, hbaseTableDataAccessor);
+            ALL_HBASE_DATA_ACCESSORS.put(innerTableName, hbaseTableDataAccessor);
             return hbaseTableDataAccessor;
-
         }
     }
 }
