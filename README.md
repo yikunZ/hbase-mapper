@@ -2,11 +2,10 @@
 基于HBase JAVA API的封装，提供一个能从JAVA Bean到HBase数据访问客户端。
 
 ## 表定义
-```
+```java
 @Table(name = "people")
 @Family("cf")
 public class People {
-
     @Rowkey
     private String rowkey;
 
@@ -64,7 +63,7 @@ public class People {
 ```
 ## 创建Mapper
 
-```
+```java
 // 构建hbase连接配置创建连接hbase的客户端
 Configuration conf = HBaseConfiguration.create();
 conf.set("hbase.zookeeper.quorum", "hb-proxy-pub-bp1h8u56427op7107-001.hbase.rds.aliyuncs.com:2181");
@@ -78,25 +77,28 @@ Mapper mapper = DefaultMapper.create(hbaseClient);
 ```
 
 ## CRUD
-```
+```java
 // 插入数据
-People people1 = new People("010101", "张三", 18, 180.5);
+People people = new People("010101", "张三", 18, 180.5);
 mapper.put(people1);
 
 // 判断数据是否存在
 boolean exists = mapper.exists("010101", People.class);
+boolean exists = mapper.exists("010101", "people");
 
 // 获取数据
-People people2 = mapper.get("010101", People.class);
+People people = mapper.get("010101", People.class);
+People people = mapper.get("010101", "people");
 
 // 删除数据
 mapper.delete("010101", People.class);
+mapper.delete("010101", "people");
 
 // 查询数据
-List<People> peopleList = mapper.scan("010101", "010111", People.class);
+List<People> peopleList = mapper.scan("1", "100", People.class);
 ```
 
 ### 支持存储的数据类型
-- java8大基础数据类型以及对应的Class：int(Integer)、short(Short)、long(Long)、byte(Byte)、double(Double)、float(Float)、boolean(Boolean)、char(Character)
-- 常用时间类型：Date、Calendar、LocalDate、LocalDateTime
+- java基础数据类型以及对应的Class：int(Integer)、short(Short)、long(Long)、byte(Byte)、double(Double)、float(Float)、boolean(Boolean)、char(Character)
+- 常用时间类型：Date、Calendar、LocalTime、LocalDate、LocalDateTime
 - 其他常用类型：String、BigDecimal
